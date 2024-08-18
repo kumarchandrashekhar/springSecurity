@@ -36,7 +36,7 @@ public class AuthController {
 
 
 
-    @PostMapping("/signin")
+    @PostMapping("/signing")
     public ResponseEntity<String> authenticateUser(@RequestBody LoginDto loginDto){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsernameOrEmail(),
                 loginDto.getPassword()));
@@ -59,14 +59,17 @@ public class AuthController {
             return new ResponseEntity<>("Email is already taken !. ",HttpStatus.BAD_REQUEST);
         }
 
+        //create user object
         User user=new User();
         user.setName(signUpDto.getName());
         user.setUsername(signUpDto.getUsername());
         user.setEmail(signUpDto.getEmail());
         user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
 
-        Role roles= roleRepository.findByName("ADMIN").get();
+        // will set Admin role for user by default
+        Role roles= roleRepository.findByName("ROLE_ADMIN").get();
         user.setRoles(Collections.singleton(roles));
+
         userRepository.save(user);
         return  new ResponseEntity<>("User registered successfully ", HttpStatus.OK);
     }
